@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Futuristic Finance AI</title>
+    <style>
+        /* Global Reset */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background: black; color: white; text-align: center; overflow-x: hidden; }
+
+        /* Hero Section */
+        .hero { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; }
+        .title { font-size: 3.5rem; font-weight: bold; background: linear-gradient(90deg, #00d4ff, #ff00ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .subtitle { font-size: 1.2rem; opacity: 0.8; margin-top: 10px; }
+
+        /* Coins Animation */
+        .coin-container { position: absolute; top: 0; left: 0; width: 100%; height: 100vh; pointer-events: none; overflow: hidden; }
+        .coin { position: absolute; width: 40px; animation: fall 2s linear forwards, bounce 1s ease-out 2s 3; }
+
+        @keyframes fall {
+            0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
+            90% { transform: translateY(90vh) rotate(calc(360deg * var(--spin))); }
+            100% { transform: translateY(85vh) rotate(calc(360deg * var(--spin))); }
+        }
+
+        @keyframes bounce {
+            0% { transform: translateY(85vh); }
+            30% { transform: translateY(80vh); }
+            60% { transform: translateY(83vh); }
+            80% { transform: translateY(82vh); }
+            100% { transform: translateY(85vh); opacity: 0; }
+        }
+
+        /* News Ticker Section */
+        .news-ticker { 
+            background: rgba(255, 255, 255, 0.1); 
+            padding: 20px; 
+            border-radius: 15px; 
+            backdrop-filter: blur(10px); 
+            border: 1px solid rgba(255, 255, 255, 0.2); 
+            margin: 20px auto; 
+            width: 80%; 
+            max-width: 800px; 
+            height: 200px;
+            overflow: hidden;
+            position: relative;
+        }
+        .news-ticker h2 { font-size: 1.5rem; margin-bottom: 10px; }
+        .news-container { 
+            height: 150px;
+            overflow-y: auto;
+            padding-right: 10px;
+            position: relative;
+        }
+        .news-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        .news-container::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        .news-container::-webkit-scrollbar-thumb {
+            background: linear-gradient(45deg, #00d4ff, #ff00ff);
+            border-radius: 10px;
+            animation: scrollThumb 2s infinite;
+        }
+        @keyframes scrollThumb {
+            0% { background: linear-gradient(45deg, #00d4ff, #ff00ff); }
+            50% { background: linear-gradient(45deg, #ff00ff, #00d4ff); }
+            100% { background: linear-gradient(45deg, #00d4ff, #ff00ff); }
+        }
+        .news-item { 
+            padding: 10px; 
+            background: rgba(255, 255, 255, 0.05); 
+            border-radius: 10px; 
+            margin-bottom: 10px; 
+            cursor: pointer; 
+            transition: 0.3s; 
+        }
+        .news-item:hover { background: rgba(255, 255, 255, 0.1); }
+        .news-item h3 { font-size: 1rem; margin-bottom: 5px; }
+        .news-item p { font-size: 0.9rem; opacity: 0.8; }
+
+        /* Finance Section */
+        .finance-section { margin-top: 40px; display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; padding: 40px; }
+        .card { background: rgba(255, 255, 255, 0.1); padding: 20px; border-radius: 15px; backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); max-width: 400px; text-align: left; }
+        .card h2 { font-size: 1.5rem; margin-bottom: 10px; }
+        .card p { font-size: 1rem; opacity: 0.8; margin-bottom: 10px; }
+        input, button { width: 100%; padding: 10px; margin-top: 10px; border: none; border-radius: 8px; }
+        input { background: rgba(255, 255, 255, 0.1); color: white; border: 1px solid rgba(255, 255, 255, 0.3); }
+        button { background: #00d4ff; color: black; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        button:hover { background: #ff00ff; }
+        
+        /* Results styling */
+        .result-container {
+            margin-top: 15px;
+            background: rgba(255,255,255,0.05);
+            padding: 10px;
+            border-radius: 8px;
+            text-align: left;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .result-item {
+            margin-bottom: 10px;
+            padding: 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Hero Section -->
+    <header class="hero">
+        <h1 class="title">AI-Powered Financial Insights</h1>
+        <p class="subtitle">Personalized investment & tax optimization</p>
+    </header>
+
+    <!-- Coins Animation -->
+    <div class="coin-container"></div>
+
+    <!-- News Ticker Section -->
+    <section class="news-ticker">
+        <h2>📰 Latest Financial News</h2>
+        <div class="news-container" id="news-container"></div>
+    </section>
+
+    <!-- Finance Section -->
+    <main class="finance-section">
+        <div class="card">
+            <h2>📈 Investment Insights</h2>
+            <p>Personalized stock & crypto recommendations.</p>
+            <input type="number" id="income" placeholder="Enter your monthly income">
+            <input type="number" id="expenses" placeholder="Enter your monthly expenses">
+            <select id="risk_profile" style="width: 100%; padding: 10px; margin-top: 10px; background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.3); border-radius: 8px;">
+                <option value="Low">Low Risk</option>
+                <option value="Medium" selected>Medium Risk</option>
+                <option value="High">High Risk</option>
+            </select>
+            <button onclick="getAIAdvice()">Get AI Advice</button>
+            <button onclick="downloadText('investment-result')">Download Advice</button>
+            <div id="investment-result" class="result-container"></div>
+        </div>
+
+        <div class="card">
+            <h2>💰 Tax Estimator</h2>
+            <p>Estimate tax & optimize deductions.</p>
+            <input type="number" id="tax-income" placeholder="Enter your annual income">
+            <button onclick="estimateTax()">Estimate Tax</button>
+            <button onclick="downloadText('tax-result')">Download Tax Estimation</button>
+            <div id="tax-result" class="result-container"></div>
+        </div>
+
+        <div class="card">
+            <h2>🏝 Wealth Forecasting</h2>
+            <p>Predict savings growth with inflation adjustments.</p>
+            <input type="number" id="current-age" placeholder="Your current age">
+            <input type="number" id="monthly-savings" placeholder="Monthly savings amount">
+            <button onclick="forecastWealth()">Forecast Wealth</button>
+            <button onclick="downloadText('forecast-result')">Download Forecast</button>
+            <div id="forecast-result" class="result-container"></div>
+        </div>
+    </main>
+
+    <script>
+        function downloadText(resultId) {
+            const container = document.getElementById(resultId);
+            const text = container.innerText || container.textContent;
+        
+            if (!text.trim()) {
+                alert("No data available to download!");
+                return;
+            }
+        
+            const blob = new Blob([text], { type: "text/plain" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = resultId + ".txt";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        
+        // Coin animation
+        function createCoin() {
+            const coin = document.createElement("img");
+            coin.src = "https://img.icons8.com/emoji/48/coin-emoji.png";
+            coin.classList.add("coin");
+            coin.style.left = Math.random() * window.innerWidth + "px";
+            coin.style.setProperty('--spin', Math.random() * 3 + 1);
+            document.querySelector(".coin-container").appendChild(coin);
+            
+            setTimeout(() => {
+                coin.remove();
+            }, 5000);
+        }
+        
+        setInterval(createCoin, 300);
+
+        // Fetch News from Backend
+        async function fetchNews() {
+            try {
+                const response = await fetch('http://127.0.0.1:5000/financial-news');
+                const data = await response.json();
+                displayNews(data.headlines);
+            } catch (error) {
+                console.error('Error fetching news:', error);
+            }
+        }
+
+        // Display News Headlines
+        function displayNews(headlines) {
+            const newsContainer = document.getElementById('news-container');
+            newsContainer.innerHTML = '';
+
+            // Add news items
+            headlines.forEach((article) => {
+                const newsItem = document.createElement('div');
+                newsItem.classList.add('news-item');
+                newsItem.innerHTML = `
+                    <h3>${article.title}</h3>
+                    <p>${article.description}</p>
+                `;
+                newsItem.addEventListener('click', () => {
+                    window.open(article.url, '_blank');
+                });
+                newsContainer.appendChild(newsItem);
+            });
+
+            // Auto-scroll functionality
+            let scrollAmount = 0;
+            const scrollHeight = newsContainer.scrollHeight - newsContainer.clientHeight;
+            const scrollInterval = setInterval(() => {
+                if (scrollAmount >= scrollHeight) {
+                    scrollAmount = 0; // Reset to top
+                    newsContainer.scrollTop = 0;
+                } else {
+                    scrollAmount += 1; // Scroll speed
+                    newsContainer.scrollTop = scrollAmount;
+                }
+            }, 50); // Scroll interval
+        }
+
+        // Fetch news on page load
+        fetchNews();
+
+        // Investment Advice Function
+        async function getAIAdvice() {
+            const income = document.getElementById("income").value;
+            const expenses = document.getElementById("expenses").value;
+            const riskProfile = document.getElementById("risk_profile").value;
+            const resultContainer = document.getElementById("investment-result");
+
+            if (!income || !expenses) {
+                resultContainer.innerHTML = '<div class="result-item">Please enter both income and expenses</div>';
+                return;
+            }
+
+            try {
+                resultContainer.innerHTML = '<div class="result-item">Loading recommendations...</div>';
+                
+                const response = await fetch('http://127.0.0.1:5000/investment-insights', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        income: parseFloat(income),
+                        expenses: parseFloat(expenses),
+                        risk_profile: riskProfile
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.status === "success") {
+                    let html = `
+                        <div class="result-item">
+                            <strong>Risk Profile:</strong> ${data.plan.risk_profile}
+                        </div>
+                        <div class="result-item">
+                            <strong>Monthly Savings:</strong> ₹${data.plan.monthly_savings}
+                        </div>
+                    `;
+                    
+                    data.plan.recommendations.forEach(rec => {
+                        html += `
+                        <div class="result-item">
+                            <strong>${rec.name}</strong><br>
+                            Allocation: ${rec.allocation}<br>
+                            Amount: ₹${rec.amount}<br>
+                            Reason: ${rec.rationale}
+                        </div>`;
+                    });
+                    
+                    if (data.plan.notes && data.plan.notes.length > 0) {
+                        html += `<div class="result-item"><strong>Notes:</strong><ul>`;
+                        data.plan.notes.forEach(note => {
+                            html += `<li>${note}</li>`;
+                        });
+                        html += `</ul></div>`;
+                    }
+                    
+                    resultContainer.innerHTML = html;
+                } else {
+                    resultContainer.innerHTML = `<div class="result-item">Error: ${data.message}</div>`;
+                }
+            } catch (error) {
+                console.error("Error fetching AI advice:", error);
+                resultContainer.innerHTML = `<div class="result-item">Failed to get advice. Please try again.</div>`;
+            }
+        }
+
+        // Tax Estimation Function
+        async function estimateTax() {
+            const income = document.getElementById("tax-income").value;
+            const resultContainer = document.getElementById("tax-result");
+
+            if (!income) {
+                resultContainer.innerHTML = '<div class="result-item">Please enter your annual income</div>';
+                return;
+            }
+
+            try {
+                resultContainer.innerHTML = '<div class="result-item">Calculating tax...</div>';
+                
+                const response = await fetch('http://127.0.0.1:5000/tax-estimator', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        income: parseFloat(income)
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.status === "success") {
+                    let html = `
+                        <div class="result-item">
+                            <strong>Annual Income:</strong> ₹${data.tax_liability.annual_income.toLocaleString()}
+                        </div>
+                        <div class="result-item">
+                            <strong>Taxable Income:</strong> ₹${data.tax_liability.taxable_income.toLocaleString()}
+                        </div>
+                        <div class="result-item">
+                            <strong>Tax Liability:</strong> ₹${data.tax_liability.calculated_tax.toLocaleString()}
+                        </div>
+                        <div class="result-item">
+                            <strong>Effective Tax Rate:</strong> ${data.tax_liability.effective_tax_rate}%
+                        </div>
+                    `;
+                    
+                    if (data.suggestions.recommendations && data.suggestions.recommendations.length > 0) {
+                        html += `<div class="result-item"><strong>Tax Saving Suggestions:</strong>`;
+                        data.suggestions.recommendations.forEach(suggestion => {
+                            html += `
+                            <div style="margin-top: 8px; padding: 8px; background: rgba(255,255,255,0.1); border-radius: 5px;">
+                                <strong>${suggestion.option}</strong> (${suggestion.section})<br>
+                                Amount: ₹${suggestion.annual_amount}<br>
+                                Potential Saving: ₹${suggestion.potential_saving}<br>
+                                Notes: ${suggestion.notes}
+                            </div>`;
+                        });
+                        html += `</div>`;
+                    }
+                    
+                    resultContainer.innerHTML = html;
+                } else {
+                    resultContainer.innerHTML = `<div class="result-item">Error: ${data.message}</div>`;
+                }
+            } catch (error) {
+                console.error("Error estimating tax:", error);
+                resultContainer.innerHTML = `<div class="result-item">Failed to estimate tax. Please try again.</div>`;
+            }
+        }
+
+        // Wealth Forecast Function
+async function forecastWealth() {
+    const currentAge = document.getElementById("current-age").value;
+    const monthlySavings = document.getElementById("monthly-savings").value;
+    const resultContainer = document.getElementById("forecast-result");
+
+    if (!currentAge || !monthlySavings) {
+        resultContainer.innerHTML = '<div class="result-item">Please enter both age and monthly savings</div>';
+        return;
+    }
+
+    try {
+        resultContainer.innerHTML = '<div class="result-item">Calculating projections...</div>';
+
+        const response = await fetch('http://127.0.0.1:5000/forecast-wealth', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                current_age: parseInt(currentAge),
+                monthly_savings: parseFloat(monthlySavings)
+            })
+        });
+
+        const data = await response.json();
+
+        if (data.status === "success") {
+            let html = `
+                <div class="result-item"><strong>Projections:</strong></div>
+                <div class="result-item">
+                    <strong>At Age 40 (in ${data.projections.at_age_40.years} years):</strong><br>
+                    ₹${data.projections.at_age_40.nominal.toLocaleString()}
+                </div>
+                <div class="result-item">
+                    <strong>At Age 60 (in ${data.projections.at_age_60.years} years):</strong><br>
+                    ₹${data.projections.at_age_60.nominal.toLocaleString()}
+                </div>
+                <div class="result-item">
+                    <strong>Economic Factors:</strong><br>
+                    Inflation Rate: ${data.economic_factors.inflation_rate}%<br>
+                    Interest Rate: ${data.economic_factors.interest_rate}%<br>
+                    Real Rate: ${data.economic_factors.real_rate}%
+                </div>
+                <div class="result-item">
+                    <strong>Assumptions:</strong><br>
+                    Annual savings increase: ${data.assumptions.annual_savings_increase}
+                </div>
+            `;
+            resultContainer.innerHTML = html;
+        } else {
+            resultContainer.innerHTML = `<div class="result-item">Error: ${data.message}</div>`;
+        }
+    } catch (error) {
+        console.error("Error forecasting wealth:", error);
+        resultContainer.innerHTML = `<div class="result-item">Failed to forecast wealth. Please try again.</div>`;
+    }
+}
+
+// Ensure this is attached correctly
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById("forecast-button").addEventListener("click", forecastWealth);
+});
+
+    </script>
+</body>
+</html>
